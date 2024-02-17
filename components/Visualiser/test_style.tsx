@@ -13,7 +13,8 @@ import {
     Pagination,
 } from '@nextui-org/react';
 import { SearchIcon } from './SearchIcon';
-import { Trash } from 'react-bootstrap-icons'; // Import Trash icon
+import { Trash } from 'react-bootstrap-icons';
+import style from './style_visualiser.module.css';
 
 // Define columns and statusOptions directly in the component
 const columns = [
@@ -43,6 +44,8 @@ const FullScreenComponent = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [interventions, setInterventions] = useState([]);
     const [toggledStatus, setToggledStatus] = useState({});
+    const [showPopUp, setShowPopUp] = useState(false); // State to control the visibility of the pop-up
+    const [elementsToDelete, setElementsToDelete] = useState([]); // State to store elements to be deleted
 
     const [sortDescriptor, setSortDescriptor] = useState({
         column: 'avertisseur',
@@ -100,21 +103,28 @@ const FullScreenComponent = () => {
             const selectedIds = Array.from(selectedKeys);
 
             // Display confirmation popup
-            const confirmation = window.confirm(`Êtes-vous sûr de vouloir supprimer ${selectedIds.length === 1 ? 'cet élément' : 'ces éléments'} définitivement ?`);
+            setShowPopUp(true);
+            setElementsToDelete(selectedIds);
 
-            // If user confirms deletion
-            if (confirmation) {
-                // Delete interventions with the selected IDs
-                await Promise.all(selectedIds.map(async (id) => {
-                    await fetch(`/api/interventions/${id}`, {
-                        method: 'DELETE',
-                    });
-                }));
-                // Fetch interventions again to update the list
-                fetchInterventions();
-                // Clear the selected keys
-                setSelectedKeys(new Set());
-            }
+        } catch (error) {
+            console.error('Error deleting interventions:', error);
+        }
+    };
+
+    const handleConfirmedDeletion = async () => {
+        try {
+            // Delete interventions with the selected IDs
+            await Promise.all(elementsToDelete.map(async (id) => {
+                await fetch(`/api/interventions/${id}`, {
+                    method: 'DELETE',
+                });
+            }));
+            // Fetch interventions again to update the list
+            fetchInterventions();
+            // Clear the selected keys
+            setSelectedKeys(new Set());
+            // Close the popup
+            setShowPopUp(false);
         } catch (error) {
             console.error('Error deleting interventions:', error);
         }
@@ -333,6 +343,18 @@ const FullScreenComponent = () => {
                     )}
                 </TableBody>
             </Table>
+            {showPopUp && (
+                <div className={style.popupOverlay}>
+                    <div className={style.popup}>
+                        <h2>Confirmation</h2>
+                        <p>Êtes-vous sûr de vouloir supprimer {elementsToDelete.length === 1 ? 'cet élément' : 'ces éléments'} définitivement ?</p>
+                        <div className={style.actions}>
+                            <button onClick={() => setShowPopUp(false)}>Annuler</button>
+                            <button onClick={handleConfirmedDeletion}>Confirmer</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
