@@ -105,6 +105,7 @@ export const Support = () => {
                     <div
                         className='flex max-md:flex-col flex-row justify-between items-center w-full mt-20 max-md:mt-14 mb-5'>
                         <Input
+                            isRequired
                             value={firstName}
                             type="text"
                             label="First Name"
@@ -113,6 +114,7 @@ export const Support = () => {
                             className="max-w-xs"
                         />
                         <Input
+                            isRequired
                             value={lastName}
                             type="text"
                             label="Last Name"
@@ -123,6 +125,7 @@ export const Support = () => {
                     </div>
                     <div className='flex max-md:flex-col flex-row justify-between items-center w-full mt-5'>
                         <Input
+                            isRequired
                             value={email}
                             type="email"
                             label="Email"
@@ -140,6 +143,7 @@ export const Support = () => {
                             className="max-w-xs"
                         />
                         <Input
+                            isRequired
                             value={phoneNumber}
                             type="tel"
                             label="Phone Number"
@@ -159,6 +163,7 @@ export const Support = () => {
                     </div>
                     <div className='flex max-md:flex-col flex-row justify-between items-center w-full mt-5'>
                         <Input
+                            isRequired
                             value={adressePostale}
                             type="Adresse postale"
                             label="Adresse postale"
