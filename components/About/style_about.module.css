@@ -1,0 +1,77 @@
+.titre {
+    color: #00B087;
+    font-family: "SF Pro Rounded", sans-serif;
+    font-size: 35px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 76.8px */
+    justify-content: left;
+}
+
+.paragraphe {
+    color: #0F1017;
+    font-family: "SF Pro Rounded", sans-serif;
+    font-size: 45px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    margin-top: 5%;
+}
+
+.texte {
+    color: #0F1017;
+    font-family: "SF Pro Rounded", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    margin-top: 5%;
+}
+
+.image_haut {
+    margin-left: 85%;
+    margin-top: -6%;
+}
+
+.image1 {
+    margin-left: 2%;
+    margin-top: -10%;
+    float: left;
+}
+
+.image2 {
+    margin-left: 2%;
+    margin-top: -10%;
+    float: right;
+}
+
+.textContainer1 {
+    float: right;
+    margin-top: -8%;
+}
+
+.textContainer2 {
+    float: left;
+    margin-top: -50%;
+    margin-right: 60%;
+}
+
+.article {
+    flex: 1;
+    margin-left: 58%;
+    margin-top: 20%;
+}
+
+.source {
+    color: #0F1017;
+    font-family: "SF Pro Rounded", sans-serif;
+    font-size: 12px;
+    font-style: italic;
+    font-weight: 500;
+    line-height: 150%;
+    margin-top: -10%;
+    margin-left: 39%;
+    margin-right: 50%;
+    margin-bottom: 30%;
+    float: left;
+}

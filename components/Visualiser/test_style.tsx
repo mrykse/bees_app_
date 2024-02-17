@@ -1,0 +1,296 @@
+import React, { useEffect, useState } from 'react';
+import {
+    Tooltip,
+    Button,
+    Card,
+    CardBody,
+    Table,
+    TableHeader,
+    TableColumn,
+    TableBody,
+    TableRow,
+    TableCell,
+    Input,
+    Chip,
+    User,
+    Pagination,
+} from '@nextui-org/react';
+import { SearchIcon } from './SearchIcon';
+
+// Define columns and statusOptions directly in the component
+const columns = [
+    { uid: 'avertisseur', name: 'Avertisseur' },
+    { uid: 'adresse_postale', name: 'Adresse Postale' },
+    { uid: 'telephone', name: 'Téléphone' },
+    { uid: 'email', name: 'Email' },
+    { uid: 'inquiry_type', name: 'Inquiry_type' },
+    { uid: 'message', name: 'Message' },
+    { uid: 'status_inquiry', name: 'Status_inquiry' },
+];
+
+const statusOptions = ['consulte', 'non_consulte'];
+
+const statusColorMap = {
+    consulte: 'success',
+    non_consulte: 'danger',
+};
+
+const INITIAL_VISIBLE_COLUMNS = ['avertisseur', 'adresse_postale', 'telephone', 'email', 'inquiry_type', 'message', 'status_inquiry'];
+
+const FullScreenComponent = () => {
+    const [filterValue, setFilterValue] = useState('');
+    const [selectedKeys, setSelectedKeys] = useState(new Set([]));
+    const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [interventions, setInterventions] = useState([]);
+    const [toggledStatus, setToggledStatus] = useState({});
+
+    const [sortDescriptor, setSortDescriptor] = useState({
+        column: 'avertisseur',
+        direction: 'ascending',
+    });
+    const [page, setPage] = useState(1);
+
+    useEffect(() => {
+        fetchInterventions();
+    }, []);
+
+    const fetchInterventions = async () => {
+        try {
+            const response = await fetch('/api/interventions'); // Assuming your backend endpoint is /api/interventions
+            const data = await response.json();
+            setInterventions(data.interventions);
+        } catch (error) {
+            console.error('Error fetching interventions:', error);
+        }
+    };
+
+    const hasSearchFilter = Boolean(filterValue);
+
+    const headerColumns = React.useMemo(() => {
+        if (visibleColumns === 'all') return columns;
+
+        return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
+    }, [visibleColumns]);
+
+    const filteredItems = React.useMemo(() => {
+        let filteredInterventions = [...interventions];
+
+        if (hasSearchFilter) {
+            filteredInterventions = filteredInterventions.filter((intervention) =>
+                intervention.avertisseur.toLowerCase().includes(filterValue.toLowerCase())
+            );
+        }
+        if (statusFilter !== 'all' && Array.from(statusFilter).length !== statusOptions.length) {
+            filteredInterventions = filteredInterventions.filter((intervention) => Array.from(statusFilter).includes(intervention.status));
+        }
+
+        return filteredInterventions;
+    }, [interventions, filterValue, statusFilter]);
+
+    const pages = Math.ceil(filteredItems.length / rowsPerPage);
+
+    const items = React.useMemo(() => {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        return filteredItems.slice(start, end);
+    }, [page, filteredItems, rowsPerPage]);
+
+    const sortedItems = React.useMemo(() => {
+        return [...items].sort((a, b) => {
+            const first = a[sortDescriptor.column];
+            const second = b[sortDescriptor.column];
+            const cmp = first < second ? -1 : first > second ? 1 : 0;
+
+            return sortDescriptor.direction === 'descending' ? -cmp : cmp;
+        })
+    }, [sortDescriptor, items]);
+
+    const toggleStatus = async (id, currentStatus) => {
+        try {
+            const newStatus = currentStatus === 'consulte' ? 'non_consulte' : 'consulte';
+            await fetch(`/api/interventions/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify({ newStatus }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            // Update the status locally
+            setInterventions(prevInterventions => {
+                return prevInterventions.map(intervention => {
+                    if (intervention._id === id) {
+                        return { ...intervention, status_inquiry: newStatus };
+                    }
+                    return intervention;
+                });
+            });
+        } catch (error) {
+            console.error('Error updating status:', error);
+        }
+    };
+
+
+
+
+    const renderCell = React.useCallback((intervention, columnKey) => {
+        const cellValue = intervention[columnKey];
+        switch (columnKey) {
+            case 'avertisseur':
+                return (
+                    <User description={`${intervention.prenom} ${intervention.nom}`} name={cellValue}>
+                        {cellValue}
+                    </User>
+
+                );
+            case 'adresse_postale':
+                return (
+                    <p className="text-bold text-small capitalize">{intervention.adresse_postale}</p>
+                );
+            case 'telephone':
+                return (
+                    <p className="text-bold text-small capitalize">{intervention.telephone}</p>
+                );
+            case 'email':
+            case 'inquiry_type':
+                return <p>{cellValue}</p>;
+            case 'status_inquiry':
+                return (
+                    <Chip
+                        className="capitalize"
+                        color={statusColorMap[intervention.status_inquiry]}
+                        size="sm"
+                        variant="flat"
+                        onClick={() => toggleStatus(intervention._id, intervention.status_inquiry)}
+                    >
+                        {intervention.status_inquiry}
+                    </Chip>
+                );
+
+
+            default:
+                return cellValue;
+        }
+    }, [interventions]);
+
+    const onNextPage = React.useCallback(() => {
+        if (page < pages) {
+            setPage(page + 1);
+        }
+    }, [page, pages]);
+
+    const onPreviousPage = React.useCallback(() => {
+        if (page > 1) {
+            setPage(page - 1);
+        }
+    }, [page]);
+
+    const onRowsPerPageChange = React.useCallback((e) => {
+        setRowsPerPage(Number(e.target.value));
+        setPage(1);
+    }, []);
+
+    const onSearchChange = React.useCallback((value) => {
+        if (value) {
+            setFilterValue(value);
+            setPage(1);
+        } else {
+            setFilterValue('');
+        }
+    }, []);
+
+    const onClear = React.useCallback(() => {
+        setFilterValue('');
+        setPage(1);
+    }, []);
+
+    const topContent = React.useMemo(() => {
+        return (
+            <div className="flex flex-col gap-4 justify-between">
+                <label className="flex text-default-400 text-small ml-auto">
+                    Students per page:
+                    <select
+                        className="bg-transparent outline-none text-default-400 text-small"
+                        onChange={onRowsPerPageChange}
+                    >
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                    </select>
+                </label>
+                <Input
+                    isClearable
+                    className="w-full sm:max-w-[44%]"
+                    placeholder="Search by name..."
+                    startContent={<SearchIcon />}
+                    value={filterValue}
+                    onClear={() => onClear()}
+                    onValueChange={onSearchChange}
+                />
+            </div>
+        );
+    }, [filterValue, statusFilter, visibleColumns, onRowsPerPageChange, interventions.length, onSearchChange, hasSearchFilter]);
+
+    const bottomContent = React.useMemo(() => {
+        return (
+            <div>
+                <label className="flex items-center text-default-400 text-small ml-2.5">
+                    Showing {items.length} data of {filteredItems.length} students
+                </label>
+                <div className="py-2 px-2 flex items-center justify-center">
+                    <Pagination
+                        isCompact
+                        showControls
+                        showShadow
+                        color="primary"
+                        page={page}
+                        total={pages}
+                        onChange={setPage}
+                    />
+                </div>
+            </div>
+        );
+    }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+
+    return (
+        <div>
+            <Table
+                aria-label="Example table with custom cells, pagination and sorting"
+                isHeaderSticky
+                bottomContent={bottomContent}
+                bottomContentPlacement="outside"
+                height="100%"
+                selectedKeys={selectedKeys}
+                selectionMode="multiple"
+                sortDescriptor={sortDescriptor}
+                topContent={topContent}
+                topContentPlacement="outside"
+                onSelectionChange={setSelectedKeys}
+                onSortChange={setSortDescriptor}
+            >
+                <TableHeader columns={headerColumns}>
+                    {(column) => (
+                        <TableColumn
+                            key={column.uid}
+                            align={column.uid === 'actions' ? 'center' : 'start'}
+                            allowsSorting={column.sortable}
+                        >
+                            {column.name}
+                        </TableColumn>
+                    )}
+                </TableHeader>
+                <TableBody emptyContent={'No interventions found'} items={sortedItems}>
+                    {(item) => (
+                        <TableRow key={item._id}>
+                            {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
+        </div>
+    );
+};
+
+export default FullScreenComponent;

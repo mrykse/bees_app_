@@ -1,0 +1,35 @@
+.titre {
+    color: #0F1017;
+    font-family: "SF Pro Rounded", sans-serif;
+    font-size: 64px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 76.8px */
+    letter-spacing: 1.28px;
+    justify-content: left;
+    margin-right: 30%;
+}
+
+.line {
+    margin-left: 43%;
+}
+.paragraphe {
+    color: #858585;
+    font-family: "SF Pro Rounded", sans-serif;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    margin-top: 5%;
+    margin-right: 40%;
+}
+
+.image {
+    margin-left: 60%;
+    margin-top: -10%;
+}
+
+.image_haut {
+    margin-left: 80%;
+    margin-top: -6%;
+}
