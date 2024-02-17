@@ -36,13 +36,20 @@ export const Support = () => {
             .match(phoneNumberValidationRegex.current);
     };
 
+    // Check if all required fields are filled and aren't just filled with spaces
+    const isFormValid = () => {
+        if (firstName.trim() == '' || lastName.trim() == '' || email.trim() == '' || phoneNumber.trim() == '' || adressePostale.trim() == '' || selected.length <= 0 || message.trim() == '') {
+            setShowIncompleteDataPopUp(true);
+            setTimeout(() => setShowIncompleteDataPopUp(false), 2000);
+        }
+        else {
+            setShowPopUp(true);
+        }
+        return;
+    };
+
     const handleConfirmedSending = async () => {
         try {
-            if (!isValidEmail(email) || !isValidPhoneNumber(phoneNumber) || firstName === '' || lastName === '' || selected.length === 0 || message === '' || adressePostale === '') {
-                setShowIncompleteDataPopUp(true);
-                setTimeout(() => setShowIncompleteDataPopUp(false), 5000);
-                return;
-            }
 
             const payload = {
                 nom: firstName,
@@ -65,11 +72,14 @@ export const Support = () => {
 
             if (response.ok) {
                 setShowConfirmationPopUp(true);
-                setTimeout(() => setShowConfirmationPopUp(false), 5000);
+                setShowPopUp(false);
+                setTimeout(() => setShowConfirmationPopUp(false), 2000);
             } else if (response.status === 404){
+                setShowConfirmationPopUp(false);
                 setShowExistingDataPopUp(true);
-                setTimeout(() => setShowExistingDataPopUp(false), 5000);
+                setTimeout(() => setShowExistingDataPopUp(false), 2000);
             }
+
         } catch (error) {
             console.error('Error sending message:', error);
         }
@@ -211,8 +221,14 @@ export const Support = () => {
                         className='mb-14 max-md:mb-8'
                     />
                     <div className='flex max-md:flex-col flex-row justify-between items-center w-full'>
-                        <Button color="success" variant="shadow" onClick={handleConfirmedSending}
-                                className='xl:w-3/12 lg:h-16 lg:text-lg text-white my-6 max-md:my-4'>
+                        <Button
+                            color="success"
+                            variant="shadow"
+                            onClick={() => {
+                                isFormValid();
+                            }}
+                            className='xl:w-3/12 lg:h-16 lg:text-lg text-white my-6 max-md:my-4'
+                        >
                             Envoyer
                         </Button>
                     </div>
@@ -225,7 +241,11 @@ export const Support = () => {
                         <p>Êtes-vous sûr de vouloir envoyer la demande ?</p>
                         <div className={style.actions}>
                             <button onClick={() => setShowPopUp(false)}>Annuler</button>
-                            <button onClick={handleConfirmedSending}>Envoyer</button>
+                            <button onClick={() => {
+                                handleConfirmedSending();
+                            }}>Envoyer
+                            </button>
+
                         </div>
                     </div>
                 </div>
@@ -234,7 +254,7 @@ export const Support = () => {
                 <div className={style.popupOverlay}>
                     <div className={style.popup}>
                         <h2>Confirmation</h2>
-                        <p>Super! We have received your request! We will intervene shortly!</p>
+                        <p>Super ! Votre signalement a bien été reçu 🌟 Nous interviendrons rapidement !</p>
                     </div>
                 </div>
             )}
