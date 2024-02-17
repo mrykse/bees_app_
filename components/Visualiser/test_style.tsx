@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
     Tooltip,
-    Button,
-    Card,
-    CardBody,
     Table,
     TableHeader,
     TableColumn,
@@ -16,6 +13,7 @@ import {
     Pagination,
 } from '@nextui-org/react';
 import { SearchIcon } from './SearchIcon';
+import { Trash } from 'react-bootstrap-icons'; // Import Trash icon
 
 // Define columns and statusOptions directly in the component
 const columns = [
@@ -78,16 +76,50 @@ const FullScreenComponent = () => {
         let filteredInterventions = [...interventions];
 
         if (hasSearchFilter) {
-            filteredInterventions = filteredInterventions.filter((intervention) =>
-                intervention.avertisseur.toLowerCase().includes(filterValue.toLowerCase())
-            );
+            console.log('Filtering interventions by search filter...');
+            filteredInterventions = filteredInterventions.filter((intervention) => {
+                const fullName = `${intervention.prenom} ${intervention.nom}`;
+                const lowerCaseFullName = fullName && fullName.toLowerCase();
+                const lowerCaseFilterValue = filterValue.toLowerCase();
+                console.log('Intervention name:', lowerCaseFullName);
+                console.log('Filter value:', lowerCaseFilterValue);
+                return lowerCaseFullName && lowerCaseFullName.includes(lowerCaseFilterValue);
+            });
         }
         if (statusFilter !== 'all' && Array.from(statusFilter).length !== statusOptions.length) {
+            console.log('Filtering interventions by status filter...');
             filteredInterventions = filteredInterventions.filter((intervention) => Array.from(statusFilter).includes(intervention.status));
         }
 
         return filteredInterventions;
     }, [interventions, filterValue, statusFilter]);
+
+    const handleDeleteSelected = async () => {
+        try {
+            // Get the IDs of selected interventions
+            const selectedIds = Array.from(selectedKeys);
+
+            // Display confirmation popup
+            const confirmation = window.confirm(`Êtes-vous sûr de vouloir supprimer ${selectedIds.length === 1 ? 'cet élément' : 'ces éléments'} définitivement ?`);
+
+            // If user confirms deletion
+            if (confirmation) {
+                // Delete interventions with the selected IDs
+                await Promise.all(selectedIds.map(async (id) => {
+                    await fetch(`/api/interventions/${id}`, {
+                        method: 'DELETE',
+                    });
+                }));
+                // Fetch interventions again to update the list
+                fetchInterventions();
+                // Clear the selected keys
+                setSelectedKeys(new Set());
+            }
+        } catch (error) {
+            console.error('Error deleting interventions:', error);
+        }
+    };
+
 
     const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -132,7 +164,15 @@ const FullScreenComponent = () => {
         }
     };
 
-
+    const deleteButton = selectedKeys.size > 0 && (
+        <Tooltip content="Delete Selected">
+            <Trash
+                size={20}
+                className="text-red-600 cursor-pointer"
+                onClick={handleDeleteSelected}
+            />
+        </Tooltip>
+    );
 
 
     const renderCell = React.useCallback((intervention, columnKey) => {
@@ -140,6 +180,7 @@ const FullScreenComponent = () => {
         switch (columnKey) {
             case 'avertisseur':
                 return (
+
                     <User description={`${intervention.prenom} ${intervention.nom}`} name={cellValue}>
                         {cellValue}
                     </User>
@@ -209,17 +250,19 @@ const FullScreenComponent = () => {
     const topContent = React.useMemo(() => {
         return (
             <div className="flex flex-col gap-4 justify-between">
-                <label className="flex text-default-400 text-small ml-auto">
-                    Students per page:
-                    <select
-                        className="bg-transparent outline-none text-default-400 text-small"
-                        onChange={onRowsPerPageChange}
-                    >
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="15">15</option>
-                    </select>
-                </label>
+                <div className="flex items-center gap-2">
+                    <label className="flex text-default-400 text-small ml-auto">
+                        Students per page:
+                        <select
+                            className="bg-transparent outline-none text-default-400 text-small"
+                            onChange={onRowsPerPageChange}
+                        >
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                        </select>
+                    </label>
+                </div>
                 <Input
                     isClearable
                     className="w-full sm:max-w-[44%]"
@@ -231,7 +274,7 @@ const FullScreenComponent = () => {
                 />
             </div>
         );
-    }, [filterValue, statusFilter, visibleColumns, onRowsPerPageChange, interventions.length, onSearchChange, hasSearchFilter]);
+    }, [filterValue, statusFilter, visibleColumns, onRowsPerPageChange, interventions.length, onSearchChange, hasSearchFilter, selectedKeys]);
 
     const bottomContent = React.useMemo(() => {
         return (
@@ -270,17 +313,18 @@ const FullScreenComponent = () => {
                 onSelectionChange={setSelectedKeys}
                 onSortChange={setSortDescriptor}
             >
-                <TableHeader columns={headerColumns}>
+                <TableHeader columns={[{ uid: 'actions', name: '' }, ...headerColumns]}>
                     {(column) => (
                         <TableColumn
                             key={column.uid}
                             align={column.uid === 'actions' ? 'center' : 'start'}
                             allowsSorting={column.sortable}
                         >
-                            {column.name}
+                            {column.uid === 'actions' ? deleteButton : column.name}
                         </TableColumn>
                     )}
                 </TableHeader>
+
                 <TableBody emptyContent={'No interventions found'} items={sortedItems}>
                     {(item) => (
                         <TableRow key={item._id}>

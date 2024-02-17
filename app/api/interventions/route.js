@@ -21,9 +21,3 @@ export async function GET() {
     return NextResponse.json({interventions})
 }
 
-export async function DELETE(request) {
-    const id = request.nextUrl.searchParams.get("id");
-    await connectMongoDB();
-    await Intervention.findByIdAndDelete(id);
-    return NextResponse.json({ message: "Intervention deleted" }, { status: 200 });
-}
