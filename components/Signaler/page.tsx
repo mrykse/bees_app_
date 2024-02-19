@@ -105,6 +105,7 @@ export const Support = () => {
 
     return (
         <>
+            <img className={style.image_haut} src="/abeille_haut.svg" alt="image"/>
             <Card className={`w-1/2 h-1/2 ml-72 `}>
                 <CardBody className='flex flex-col justify-center items-start px-16 py-14 max-lg:px-12 max-lg:py-10'>
                     <h3 className='text-5xl max-md:text-3xl font-semibold tracking-wide antialiased mb-10 max-md:mb-5 text-gray-800'>Buzzez-nous

@@ -36,7 +36,7 @@ const statusColorMap = {
 
 const INITIAL_VISIBLE_COLUMNS = ['avertisseur', 'adresse_postale', 'telephone', 'email', 'inquiry_type', 'message', 'status_inquiry'];
 
-const FullScreenComponent = () => {
+const VisualiserCard = () => {
     const [filterValue, setFilterValue] = useState('');
     const [selectedKeys, setSelectedKeys] = useState(new Set([]));
     const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -359,4 +359,4 @@ const FullScreenComponent = () => {
     );
 };
 
-export default FullScreenComponent;
+export default VisualiserCard;
