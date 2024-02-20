@@ -1,3 +1,4 @@
+'use client';
 import {
 	Navbar as NextUINavbar,
 	NavbarContent,
@@ -28,28 +29,19 @@ import {
 } from "@/components/icons";
 
 import { Logo } from "@/components/icons";
+import { useSession } from "next-auth/react";
 
 export const Navbar = () => {
-	const searchInput = (
-		<Input
-			aria-label="Search"
-			classNames={{
-				inputWrapper: "bg-default-100",
-				input: "text-sm",
-			}}
-			endContent={
-				<Kbd className="hidden lg:inline-block" keys={["command"]}>
-					K
-				</Kbd>
-			}
-			labelPlacement="outside"
-			placeholder="Search..."
-			startContent={
-				<SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-			}
-			type="search"
-		/>
-	);
+	const { data: session, status } = useSession();
+
+	// Function to check if the user has admin role
+	const isAdmin = () => session && session.user.role === 'admin';
+
+	// Handle session loading state
+	if (status === 'loading') {
+		return <div>Loading...</div>;
+	}
+
 
 	return (
 		<NextUINavbar maxWidth="xl" position="sticky">
@@ -61,22 +53,23 @@ export const Navbar = () => {
 				</NavbarBrand>
 				<ul className="hidden lg:flex gap-4 justify-start ml-2">
 					{siteConfig.navItems.map((item) => (
-						<NavbarItem key={item.href}>
-							<NextLink
-								className={clsx(
-									linkStyles({ color: "foreground" }),
-									"data-[active=true]:text-primary data-[active=true]:font-medium"
-								)}
-								color="foreground"
-								href={item.href}
-							>
-								{item.label}
-							</NextLink>
-						</NavbarItem>
+						// Conditionally render the Visualiser link based on user's role
+						!isAdmin() && item.label === "Visualiser" ? null :
+							<NavbarItem key={item.href}>
+								<NextLink
+									className={clsx(
+										linkStyles({ color: "foreground" }),
+										"data-[active=true]:text-primary data-[active=true]:font-medium"
+									)}
+									color="foreground"
+									href={item.href}
+								>
+									{item.label}
+								</NextLink>
+							</NavbarItem>
 					))}
 				</ul>
 			</NavbarContent>
-
 
 			<NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
 				<Link isExternal href={siteConfig.links.github} aria-label="Github">
@@ -87,7 +80,6 @@ export const Navbar = () => {
 			</NavbarContent>
 
 			<NavbarMenu>
-				{searchInput}
 				<div className="mx-4 mt-2 flex flex-col gap-2">
 					{siteConfig.navMenuItems.map((item, index) => (
 						<NavbarMenuItem key={`${item}-${index}`}>
@@ -96,8 +88,8 @@ export const Navbar = () => {
 									index === 2
 										? "primary"
 										: index === siteConfig.navMenuItems.length - 1
-										? "danger"
-										: "foreground"
+											? "danger"
+											: "foreground"
 								}
 								href="#"
 								size="lg"
