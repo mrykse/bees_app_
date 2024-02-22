@@ -30,18 +30,26 @@ import {
 
 import { Logo } from "@/components/icons";
 import { useSession } from "next-auth/react";
+import {useEffect, useState} from "react";
 
 export const Navbar = () => {
-	const { data: session, status } = useSession();
+	const { data: session } = useSession();
+	const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
 
-	// Function to check if the user has admin role
-	const isAdmin = () => session && session.user.role === 'admin';
-
-	// Handle session loading state
-	if (status === 'loading') {
-		return <div>Loading...</div>;
-	}
-
+	useEffect(() => {
+		const fetchUserRole = async () => {
+			if (session && session.user?.id) { // Check if session exists and email is defined
+				console.log("fetching user role for id" + session.user.id);
+				const res = await fetch(`/api/users/${session.user.id}`);
+				console.log(res);
+				const data = await res.json();
+				console.log(data);
+				console.log("role of the user" + data.user?.role);
+				setIsAdmin(data.user?.role === 'admin');
+			}
+		};
+		fetchUserRole().then(r => console.log(r));
+	}, [session]);
 
 	return (
 		<NextUINavbar maxWidth="xl" position="sticky">
@@ -54,7 +62,7 @@ export const Navbar = () => {
 				<ul className="hidden lg:flex gap-4 justify-start ml-2">
 					{siteConfig.navItems.map((item) => (
 						// Conditionally render the Visualiser link based on user's role
-						!isAdmin() && item.label === "Visualiser" ? null :
+						!isAdmin && item.label === "Visualiser" ? null :
 							<NavbarItem key={item.href}>
 								<NextLink
 									className={clsx(

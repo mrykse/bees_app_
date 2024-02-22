@@ -21,17 +21,18 @@ async function init() {
 
 export async function findUserById(userId) {
     try {
-        if (!users) await init()
+        if (!users) await init();
 
-        const user = await users.findOne({ _id: userId })
+        const user = await users.findOne({ id: userId });
 
-        if (!user) throw new Error()
+        if (!user) throw new Error('User not found.');
 
-        return { user: { ...user, _id: user._id.toString() } }
+        return { user: { ...user, id: user.id.toString() }, isAdmin: user.role === 'admin' };
     } catch (error) {
-        return { error: 'Failed to find the user.' }
+        return { error: 'Failed to find the user.' };
     }
 }
+
 
 export async function findUserByEmail(email) {
     try {
@@ -46,6 +47,7 @@ export async function findUserByEmail(email) {
         return { error: 'Failed to find the user.' };
     }
 }
+
 
 export async function updateUser(email, update) {
     try {
