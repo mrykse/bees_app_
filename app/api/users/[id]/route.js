@@ -15,6 +15,19 @@ export async function PUT(request, { params }) {
     return NextResponse.json({ message: "User updated", updatedUser }, { status: 200 });
 }
 
+// POST request to create a new user
+export async function POST(request) {
+    try {
+        const user = await request.json(); // Extract the user from the request body
+        await connectMongoDB();
+        const newUser = await User.create(user);
+        return NextResponse.json({ message: "User created", newUser }, { status: 201 });
+    } catch (error) {
+        console.error('Error creating user:', error);
+        return NextResponse.json({ message: 'Error creating user' }, { status: 500 });
+    }
+}
+
 // GET request to retrieve a specific user
 export async function GET(request, { params }) {
     const { id } = params;

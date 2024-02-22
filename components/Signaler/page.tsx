@@ -78,6 +78,8 @@ export const Support = () => {
                 setShowConfirmationPopUp(false);
                 setShowExistingDataPopUp(true);
                 setTimeout(() => setShowExistingDataPopUp(false), 2000);
+            } else if (response.status === 429){
+                alert("⚠️ You can't send more requests at the same time");
             }
 
         } catch (error) {

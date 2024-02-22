@@ -15,6 +15,7 @@ export default NextAuth({
                     name: profile.name,
                     email: profile.email,
                     image: profile.picture,
+                    given_name: profile.given_name,
                     role: "user" // Set the default role to "user"
                 }
             }
@@ -25,6 +26,10 @@ export default NextAuth({
             if (user) {
                 token.role = user.role
                 token.sub = user.id
+                token.name = user.name
+                token.email = user.email
+                token.picture = user.image
+                token.given_name = user.given_name
             }
 
             if (trigger === 'update' && session?.name) {
@@ -52,7 +57,7 @@ export default NextAuth({
                             name: token.name || '',
                             email: token.email || '',
                             image: token.picture || '',
-                            role: token.role || 'user'
+                            role: token.role || 'user',
                         });
                     }
                 } catch (error) {
@@ -61,7 +66,7 @@ export default NextAuth({
                     await client.close();
                 }
             }
-
+            session.user.given_name = token.given_name
             session.user.role = token.role
             session.user.id = token.sub || ''
             return session
