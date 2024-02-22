@@ -52,8 +52,8 @@ export const Support = () => {
         try {
 
             const payload = {
-                nom: firstName,
-                prenom: lastName,
+                nom: lastName,
+                prenom: firstName,
                 email: email,
                 telephone: phoneNumber,
                 adresse_postale: adressePostale,

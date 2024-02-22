@@ -8,7 +8,7 @@ export async function POST(request) {
         await connectMongoDB();
 
         // Check if the data already exists
-        const existingIntervention = await Intervention.findOne({ nom, prenom, email, telephone, adresse_postale, message, inquiry_type, status_inquiry });
+        const existingIntervention = await Intervention.findOne({ prenom, nom, email, telephone, adresse_postale, message, inquiry_type, status_inquiry });
 
         if (existingIntervention) {
             // If the data already exists, return a 404 error
@@ -16,7 +16,7 @@ export async function POST(request) {
         }
 
         // If the data does not exist, create a new entry
-        await Intervention.create({ nom, prenom, email, telephone, adresse_postale, message, inquiry_type, status_inquiry });
+        await Intervention.create({ prenom, nom, email, telephone, adresse_postale, message, inquiry_type, status_inquiry });
 
         // Return a success message
         return new Response('Intervention enregistrée avec succès', { status: 201 });
