@@ -1,21 +1,19 @@
 import React, { useRef, useState } from 'react';
 import { Button, Card, CardBody, Checkbox, CheckboxGroup, Input, Textarea } from '@nextui-org/react';
-import { Home, Phone } from 'lucide-react';
-import dynamic from "next/dynamic";
 import MapComponent from "@/components/Signaler/Map";
 import style from "./style_signaler.module.css";
 
 export const Support = () => {
-    const [firstName, setFirstName] = useState<string>('John');
-    const [lastName, setLastName] = useState<string>('Doe');
+    const [firstName, setFirstName] = useState<string>('Prenom');
+    const [lastName, setLastName] = useState<string>('Nom');
     const [isInvalidEmail, setIsInvalidEmail] = useState<boolean>(false);
     const [isInvalidPhoneNumber, setIsInvalidPhoneNumber] = useState<boolean>(false);
-    const [email, setEmail] = useState<string>('user@examng.net');
-    const [phoneNumber, setPhoneNumber] = useState<string>('+33 06 12 34 56 78');
+    const [email, setEmail] = useState<string>('nom@example.fr');
+    const [phoneNumber, setPhoneNumber] = useState<string>('06 12 34 56 78');
     const [isInvalid, setIsInvalid] = useState<boolean>(true);
     const [selected, setSelected] = useState<string[]>([]);
     const [message, setMessage] = useState<string>('');
-    const [adressePostale, setAdressePostale] = useState<string>('30-32 Av. de la République, 94800 Villejuif');
+    const [adressePostale, setAdressePostale] = useState<string>('30-32 Av. exemple, 75008 Paris, France');
     const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
     const [shouldZoom, setShouldZoom] = useState<boolean>(false);
     const [showPopUp, setShowPopUp] = useState<boolean>(false);
@@ -113,7 +111,7 @@ export const Support = () => {
                     <h3 className='text-5xl max-md:text-3xl font-semibold tracking-wide antialiased mb-10 max-md:mb-5 text-gray-800'>Buzzez-nous
                         !</h3>
                     <p><span
-                        className='text-left font-normal tracking-normal text-lg max-md:text-base text-gray-700/50'>Veuillez saisir l'ensemble des informations demandées, afin qu'on puisse vous aider au mieux ! </span>
+                        className='text-left font-normal tracking-normal text-lg max-md:text-base text-gray-700/50'>Veuillez saisir l&apos;ensemble des informations demandées, afin qu&apos;on puisse vous aider au mieux ! </span>
                     </p>
                     <div
                         className='flex max-md:flex-col flex-row justify-between items-center w-full mt-20 max-md:mt-14 mb-5'>
@@ -121,7 +119,7 @@ export const Support = () => {
                             isRequired
                             value={firstName}
                             type="text"
-                            label="First Name"
+                            label="Prenom"
                             variant="underlined"
                             onValueChange={setFirstName}
                             className="max-w-xs"
@@ -130,7 +128,7 @@ export const Support = () => {
                             isRequired
                             value={lastName}
                             type="text"
-                            label="Last Name"
+                            label="Nom"
                             variant="underlined"
                             onValueChange={setLastName}
                             className="max-w-xs"
@@ -159,7 +157,7 @@ export const Support = () => {
                             isRequired
                             value={phoneNumber}
                             type="tel"
-                            label="Phone Number"
+                            label="Numéro de téléphone"
                             variant="underlined"
                             isInvalid={isInvalidPhoneNumber}
                             onValueChange={(value: string) => {
@@ -198,7 +196,7 @@ export const Support = () => {
                         isRequired
                         orientation='horizontal'
                         isInvalid={isInvalid}
-                        label="Select subject"
+                        label="Sélectionner un sujet"
                         color='default'
                         onValueChange={(value: string[]) => {
                             setIsInvalid(value.length < 1);
@@ -208,17 +206,17 @@ export const Support = () => {
                         value={selected}
                         className='my-14 max-md:my-8'
                     >
-                        <Checkbox value="localisation essaim">Localisation d'un Essaim</Checkbox>
-                        <Checkbox value="intervention générale">Besoin d'une intervention</Checkbox>
+                        <Checkbox value="localisation essaim">Localisation d&apos;un Essaim</Checkbox>
+                        <Checkbox value="intervention générale">Besoin d&apos;une intervention</Checkbox>
                     </CheckboxGroup>
                     <Textarea
                         minRows={1}
                         maxRows={5}
                         isRequired
                         variant='underlined'
-                        label="Message"
+                        label="Informations complémentaires"
                         labelPlacement='outside'
-                        placeholder="Write your message..."
+                        placeholder="Veuillez saisir des informations complémentaires..."
                         value={message}
                         onValueChange={setMessage}
                         className='mb-14 max-md:mb-8'

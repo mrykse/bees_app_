@@ -20,10 +20,6 @@ export const siteConfig = {
 		  label: "Newsletter",
 		  href: "/newsletter",
 		},
-		{
-			label: "Je suis administrateur",
-			href: "/admin",
-		},
 	],
 	navMenuItems: [
 		{

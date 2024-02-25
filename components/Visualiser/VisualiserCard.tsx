@@ -19,12 +19,12 @@ import style from './style_visualiser.module.css';
 // Define columns and statusOptions directly in the component
 const columns = [
     { uid: 'avertisseur', name: 'Avertisseur' },
-    { uid: 'adresse_postale', name: 'Adresse Postale' },
+    { uid: 'adresse_postale', name: 'Adresse postale' },
     { uid: 'telephone', name: 'Téléphone' },
     { uid: 'email', name: 'Email' },
-    { uid: 'inquiry_type', name: 'Inquiry_type' },
+    { uid: 'inquiry_type', name: 'Type de demande' },
     { uid: 'message', name: 'Message' },
-    { uid: 'status_inquiry', name: 'Status_inquiry' },
+    { uid: 'status_inquiry', name: 'Etat' },
 ];
 
 const statusOptions = ['consulte', 'non_consulte'];
@@ -70,6 +70,7 @@ const VisualiserCard = () => {
     const hasSearchFilter = Boolean(filterValue);
 
     const headerColumns = React.useMemo(() => {
+        // @ts-ignore
         if (visibleColumns === 'all') return columns;
 
         return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
@@ -81,6 +82,7 @@ const VisualiserCard = () => {
         if (hasSearchFilter) {
             console.log('Filtering interventions by search filter...');
             filteredInterventions = filteredInterventions.filter((intervention) => {
+                // @ts-ignore
                 const fullName = `${intervention.prenom} ${intervention.nom}`;
                 const lowerCaseFullName = fullName && fullName.toLowerCase();
                 const lowerCaseFilterValue = filterValue.toLowerCase();
@@ -91,6 +93,7 @@ const VisualiserCard = () => {
         }
         if (statusFilter !== 'all' && Array.from(statusFilter).length !== statusOptions.length) {
             console.log('Filtering interventions by status filter...');
+            // @ts-ignore
             filteredInterventions = filteredInterventions.filter((intervention) => Array.from(statusFilter).includes(intervention.status));
         }
 
@@ -150,6 +153,7 @@ const VisualiserCard = () => {
         })
     }, [sortDescriptor, items]);
 
+    // @ts-ignore
     const toggleStatus = async (id, currentStatus) => {
         try {
             const newStatus = currentStatus === 'consulte' ? 'non_consulte' : 'consulte';
@@ -161,9 +165,12 @@ const VisualiserCard = () => {
                 },
             });
             // Update the status locally
+            // @ts-ignore
             setInterventions(prevInterventions => {
                 return prevInterventions.map(intervention => {
+                    // @ts-ignore
                     if (intervention._id === id) {
+                        // @ts-ignore
                         return { ...intervention, status_inquiry: newStatus };
                     }
                     return intervention;
@@ -184,7 +191,7 @@ const VisualiserCard = () => {
         </Tooltip>
     );
 
-
+// @ts-ignore
     const renderCell = React.useCallback((intervention, columnKey) => {
         const cellValue = intervention[columnKey];
         switch (columnKey) {
@@ -211,6 +218,7 @@ const VisualiserCard = () => {
                 return (
                     <Chip
                         className="capitalize"
+                        // @ts-ignore
                         color={statusColorMap[intervention.status_inquiry]}
                         size="sm"
                         variant="flat"
@@ -238,11 +246,13 @@ const VisualiserCard = () => {
         }
     }, [page]);
 
+    // @ts-ignore
     const onRowsPerPageChange = React.useCallback((e) => {
         setRowsPerPage(Number(e.target.value));
         setPage(1);
     }, []);
 
+    // @ts-ignore
     const onSearchChange = React.useCallback((value) => {
         if (value) {
             setFilterValue(value);
@@ -262,7 +272,7 @@ const VisualiserCard = () => {
             <div className="flex flex-col gap-4 justify-between">
                 <div className="flex items-center gap-2">
                     <label className="flex text-default-400 text-small ml-auto">
-                        Students per page:
+                        Nombre d&apos;interventions par page:
                         <select
                             className="bg-transparent outline-none text-default-400 text-small"
                             onChange={onRowsPerPageChange}
@@ -276,7 +286,7 @@ const VisualiserCard = () => {
                 <Input
                     isClearable
                     className="w-full sm:max-w-[44%]"
-                    placeholder="Search by name..."
+                    placeholder="Rechercher par nom/prénom"
                     startContent={<SearchIcon />}
                     value={filterValue}
                     onClear={() => onClear()}
@@ -290,7 +300,7 @@ const VisualiserCard = () => {
         return (
             <div>
                 <label className="flex items-center text-default-400 text-small ml-2.5">
-                    Showing {items.length} data of {filteredItems.length} students
+                    Affichage de {items.length} intervention(s) sur {filteredItems.length} intervention(s)
                 </label>
                 <div className="py-2 px-2 flex items-center justify-center">
                     <Pagination
@@ -317,10 +327,13 @@ const VisualiserCard = () => {
                 height="100%"
                 selectedKeys={selectedKeys}
                 selectionMode="multiple"
+                // @ts-ignore
                 sortDescriptor={sortDescriptor}
                 topContent={topContent}
                 topContentPlacement="outside"
+                // @ts-ignore
                 onSelectionChange={setSelectedKeys}
+                // @ts-ignore
                 onSortChange={setSortDescriptor}
             >
                 <TableHeader columns={[{ uid: 'actions', name: '' }, ...headerColumns]}>
@@ -328,6 +341,7 @@ const VisualiserCard = () => {
                         <TableColumn
                             key={column.uid}
                             align={column.uid === 'actions' ? 'center' : 'start'}
+                            // @ts-ignore
                             allowsSorting={column.sortable}
                         >
                             {column.uid === 'actions' ? deleteButton : column.name}
@@ -337,6 +351,7 @@ const VisualiserCard = () => {
 
                 <TableBody emptyContent={'No interventions found'} items={sortedItems}>
                     {(item) => (
+                        // @ts-ignore
                         <TableRow key={item._id}>
                             {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
                         </TableRow>
