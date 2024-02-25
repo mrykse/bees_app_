@@ -6,6 +6,7 @@ import { Providers } from "./providers";
 import {Navbar} from "@/components/navbar";
 import { Link } from "@nextui-org/link";
 import clsx from "clsx";
+import Head from "next/head";
 
 export const metadata: Metadata = {
 	title: {
@@ -13,10 +14,6 @@ export const metadata: Metadata = {
 		template: `%s - ${siteConfig.name}`,
 	},
 	description: siteConfig.description,
-	themeColor: [
-		{ media: "(prefers-color-scheme: light)", color: "white" },
-		{ media: "(prefers-color-scheme: dark)", color: "black" },
-	],
 	icons: {
 		icon: "/favicon.ico",
 		shortcut: "/favicon-16x16.png",
@@ -31,7 +28,10 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-		<head />
+			<Head>
+			<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+			<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+			</Head>
 		<body
 			className={clsx(
 				"min-h-screen bg-background font-sans antialiased",
