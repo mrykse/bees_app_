@@ -12,7 +12,7 @@ export default function UserCard({ user}: Props) {
             <p>Current Logged In User</p>
             <h5>User name : {user?.name}</h5>
             <h5>User email : {user?.email}</h5>
-            <img src={user?.image} alt="user image"/>
+            {user?.image && <img src={user.image} alt="user image"/>}
             <h5>User role : {user?.role}</h5>
             <h5>User id : {user?.id}</h5>
 
