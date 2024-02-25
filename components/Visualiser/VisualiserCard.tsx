@@ -11,6 +11,7 @@ import {
     Chip,
     User,
     Pagination,
+    Spinner,
 } from '@nextui-org/react';
 import { SearchIcon } from './SearchIcon';
 import { Trash } from 'react-bootstrap-icons';
@@ -37,6 +38,7 @@ const statusColorMap = {
 const INITIAL_VISIBLE_COLUMNS = ['avertisseur', 'adresse_postale', 'telephone', 'email', 'inquiry_type', 'message', 'status_inquiry'];
 
 const VisualiserCard = () => {
+    const [isLoading, setIsLoading] = useState(true); // State to track loading status
     const [filterValue, setFilterValue] = useState('');
     const [selectedKeys, setSelectedKeys] = useState(new Set([]));
     const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -62,6 +64,7 @@ const VisualiserCard = () => {
             const response = await fetch('/api/interventions'); // Assuming your backend endpoint is /api/interventions
             const data = await response.json();
             setInterventions(data.interventions);
+            setIsLoading(false); // Set loading to false once data is fetched
         } catch (error) {
             console.error('Error fetching interventions:', error);
         }
@@ -319,6 +322,9 @@ const VisualiserCard = () => {
 
     return (
         <div>
+            {isLoading ? (
+                <Spinner/>
+            ) : (
             <Table
                 aria-label="Example table with custom cells, pagination and sorting"
                 isHeaderSticky
@@ -358,6 +364,7 @@ const VisualiserCard = () => {
                     )}
                 </TableBody>
             </Table>
+            )}
             {showPopUp && (
                 <div className={style.popupOverlay}>
                     <div className={style.popup}>
