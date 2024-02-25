@@ -65,7 +65,7 @@ export const Support = () => {
                 status_inquiry: "non_consulte"
             };
 
-            const response = await fetch('http://localhost:3000/api/interventions', {
+            const response = await fetch('https://sos-abbeilles.vercel.app/api/interventions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
