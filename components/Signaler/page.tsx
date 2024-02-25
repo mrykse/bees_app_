@@ -1,8 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { Button, Card, CardBody, Checkbox, CheckboxGroup, Input, Textarea } from '@nextui-org/react';
-import MapComponent from "@/components/Signaler/Map";
 import style from "./style_signaler.module.css";
+import dynamic from "next/dynamic";
 
+const MapComponent = dynamic(() => import('@/components/Signaler/Map'), {
+    ssr: false // Ensure component is not rendered on server-side
+});
 export const Support = () => {
     const [firstName, setFirstName] = useState<string>('Prenom');
     const [lastName, setLastName] = useState<string>('Nom');
@@ -98,6 +101,12 @@ export const Support = () => {
             console.error('Error fetching coordinates:', error);
         }
     };
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            fetchCoordinates();
+        }
+    }, [adressePostale]);
 
     const handleAddressChange = (value: string) => {
         setAdressePostale(value);
