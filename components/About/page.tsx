@@ -26,7 +26,7 @@ const ExempleTexte: React.FC = () => {
 
             <div className={style.textContainer2}>
                 <p className={style.titre}>Notre objectif</p>
-                <p className={style.paragraphe}>Élever les Abeilles, Cultiver l'Harmonie</p>
+                <p className={style.paragraphe}>Élever les Abeilles, Cultiver l&apos;Harmonie</p>
                 <p className={style.texte}>Nous oeuvrons pour la protection et la préservation des abeilles en ville.</p>
 
 

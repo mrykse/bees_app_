@@ -112,7 +112,7 @@ export const Newsletter = () => {
 
                         <Button color="success" variant="shadow" onClick={sendEmail}
                                 className='xl:w-3/12 lg:h-16 lg:text-lg text-white my-6 max-md:my-4 mt-10'>
-                            S'abonner
+                            S&apos;abonner
                         </Button>
                     </div>
 
